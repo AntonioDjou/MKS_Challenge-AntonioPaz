@@ -5,11 +5,11 @@ using TMPro;
 
 public class SceneManagerScript : MonoBehaviour
 {
-    [SerializeField] Slider matchSlider;
-    [SerializeField] TextMeshProUGUI matchTimer;
+    public Slider matchSlider;
+    public TextMeshProUGUI matchTimer;
 
-    [SerializeField] Slider enemySpawnSlider;
-    [SerializeField] TextMeshProUGUI enemySpawnTimer;
+    public Slider enemySpawnSlider;
+    public TextMeshProUGUI enemySpawnTimer;
 
     public static int matchDuration;
 
