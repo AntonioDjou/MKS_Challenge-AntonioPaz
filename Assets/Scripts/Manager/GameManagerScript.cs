@@ -1,15 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-public class GameManager : MonoBehaviour
+using UnityEngine.SceneManagement;
+public class GameManagerScript : MonoBehaviour
 {
     float currentTime = 0f;
     float startingTime = 90f;
     public TextMeshProUGUI countDownTimer;
+    public SceneManagerScript sceneManagerScript;
     void Start()
     {
-        currentTime = startingTime;
+        currentTime = SceneManagerScript.matchDuration;
     }
 
     // Update is called once per frame
@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour
         {
             currentTime = 0;
             countDownTimer.color = Color.red;
-            // Call the GameOver Function
+            SceneManager.LoadScene("GameOver");
         }
 
         DisplayTime(currentTime);

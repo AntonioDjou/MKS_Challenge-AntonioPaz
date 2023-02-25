@@ -1,60 +1,111 @@
 using UnityEngine;
-
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+ 
 public class PlayerControllerScript : MonoBehaviour
 {
-    /*public float moveSpeed = 6f;
-    void Update()
-    {
-        Vector3 position = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-        transform.Translate(position * moveSpeed * Time.deltaTime);
-    }*/
-
     float veloc;
 	float velocRot;
-	private float posicaoAcima;
-	private float posicaoLado;
-	private float alturaDoSprite;
-	private Vector3 vetorCamera;
+	public Camera mainCamera;
+	public bool playerInvincible;
+	
+	public Transform firePosition;
+	public float timeBetweenBullets = 1;
+	float lastShot;
+	
+	
+	public Image healthBar;
+	public float maxHealth = 100;
+	public float currentHealth = 0;
+
+	public Transform firePoint;
+    public GameObject bulletPrefab;
+    public float bulletSpeed = 20;
 
 	void Start(){
 		veloc = 8f;
 		velocRot = 160f;
-		alturaDoSprite = GetComponent<SpriteRenderer>().bounds.extents.y;
-		vetorCamera = Camera.main.ViewportToWorldPoint(new Vector3(1, 1, Camera.main.nearClipPlane));
-		posicaoAcima = vetorCamera.y;
-		posicaoLado  = vetorCamera.x;
+		currentHealth = maxHealth;
+		UpdateHealthBar();
+		lastShot = timeBetweenBullets;
 	}
 
-	// Atualiza a posicao do GameObject a cada FPS.
-	void Update () {
+	void Update () 
+	{
 		float x = Input.GetAxis("Vertical");
-		float y = Input.GetAxis("Horizontal");
+		//float y = Input.GetAxis("Horizontal");
 
 		float desloc = Mathf.Clamp(x, 0f, 1f) * veloc * Time.deltaTime;
-		float deslocV = y * velocRot * Time.deltaTime;
+		//float deslocV = y * velocRot * Time.deltaTime;
 		transform.Translate(0, desloc, 0);
-		transform.Rotate(0, 0, -1*deslocV);
+		//transform.Rotate(0, 0, -1*deslocV);*/
 
-		//Limita movimentacao no limite superior da tela
-		if (transform.position.y + alturaDoSprite > posicaoAcima){
-			float posY = posicaoAcima - alturaDoSprite;
-			transform.position = new Vector3(transform.position.x, posY, 0);
-		} 
-		//Limita movimentacao no limite inferior da tela
-		else if (transform.position.y - alturaDoSprite < -posicaoAcima){
-			float posY = -posicaoAcima + alturaDoSprite;
-			transform.position = new Vector3(transform.position.x, posY, 0);
-		} 
-
-		//Limita movimentacao no limite lateral DIREITA da tela
-		if (transform.position.x + alturaDoSprite > posicaoLado){
-			float posX = posicaoLado - alturaDoSprite;
-			transform.position = new Vector3(posX, transform.position.y, 0);
-		} 
-		//Limita movimentacao no limite lateral ESQUERDO da tela
-		else if (transform.position.x - alturaDoSprite < -posicaoLado){
-			float posX = -posicaoLado + alturaDoSprite;
-			transform.position = new  Vector3(posX, transform.position.y, 0);
-		} 
+		LookAtMouse();
+		
+		lastShot += Time.deltaTime;
+        
+		if(Input.GetButtonDown("Fire1"))
+		{
+			if(lastShot >= timeBetweenBullets)
+        	{
+				lastShot = 0;
+				FrontalShoot();
+			}
+		}
 	}
+
+	void FrontalShoot()
+	{
+		/*GameObject bullet = ObjectPoolerScript.objPoolerScript.GetPooledObject(); // Call a instance of the ObjectPoolerScript Class then call the function to create the ObjectPooling
+		if(bullet == null) 
+		{
+			return;
+		}
+		bullet.transform.position = firePosition.position; // Tells on which point the bullet should be created.
+		bullet.transform.rotation = firePosition.rotation; // Gets the correct rotation for the bullet.
+		bullet.SetActive(true);
+		*/
+		GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+		Rigidbody2D bulletRigidBody = bullet.GetComponent<Rigidbody2D>();	
+		bulletRigidBody.AddForce(firePoint.up * bulletSpeed, ForceMode2D.Impulse);
+		
+	}
+
+	void UpdateHealthBar()
+	{
+		healthBar.fillAmount = currentHealth / maxHealth;
+	}
+
+	public void TakeDamage(float damageAmount)
+    {
+		playerInvincible = true;
+		Invoke("InvencibilityOff", 3f);		
+
+        //Debug.Log($"Damage Amount: {damageAmount}");
+        currentHealth -= damageAmount;
+        //Debug.Log($"Health is now: {currentHealth}");
+		UpdateHealthBar();
+        if(currentHealth <= 0)
+        {
+			playerInvincible = true;
+            Destroy(gameObject);
+            SceneManager.LoadScene("GameOver");
+        }
+		        
+    }
+
+    void InvencibilityOff()
+    {
+        playerInvincible = false;
+    }
+    
+
+	void LookAtMouse()
+	{
+		Vector2 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+		transform.up = mousePos - new Vector2(transform.position.x, transform.position.y);
+	}
+
+	
+	//I
 }
