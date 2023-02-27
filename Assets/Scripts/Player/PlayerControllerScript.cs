@@ -5,29 +5,39 @@ using UnityEngine.SceneManagement;
 public class PlayerControllerScript : MonoBehaviour
 {
     float veloc;
-	float velocRot;
+	//float velocRot;
 	public Camera mainCamera;
 	public bool playerInvincible;
 	
 	public Transform firePosition;
 	public float timeBetweenBullets = 1;
 	float lastShot;
+	[SerializeField] float lastLateralShot;
 	
 	
 	public Image healthBar;
 	public float maxHealth = 100;
 	public float currentHealth = 0;
 
+	public GameObject bulletPrefab;
 	public Transform firePoint;
-    public GameObject bulletPrefab;
     public float bulletSpeed = 20;
+
+	public Transform firePointL1;
+	public Transform firePointL2;
+	public Transform firePointL3;
+
+	public Transform firePointR1;
+	public Transform firePointR2;
+	public Transform firePointR3;
 
 	void Start(){
 		veloc = 8f;
-		velocRot = 160f;
+		//velocRot = 160f;
 		currentHealth = maxHealth;
 		UpdateHealthBar();
 		lastShot = timeBetweenBullets;
+		lastLateralShot = timeBetweenBullets;
 	}
 
 	void Update () 
@@ -43,6 +53,7 @@ public class PlayerControllerScript : MonoBehaviour
 		LookAtMouse();
 		
 		lastShot += Time.deltaTime;
+		lastLateralShot += Time.deltaTime;
         
 		if(Input.GetButtonDown("Fire1"))
 		{
@@ -50,6 +61,26 @@ public class PlayerControllerScript : MonoBehaviour
         	{
 				lastShot = 0;
 				FrontalShoot();
+			}
+		}
+
+		if(Input.GetKeyDown(KeyCode.Z))
+		{
+			
+			if(lastLateralShot >= timeBetweenBullets)
+        	{
+				lastLateralShot = 0;
+				LeftShoot();
+			}
+		}
+
+		if(Input.GetKeyDown(KeyCode.X))
+		{
+			
+			if(lastLateralShot >= timeBetweenBullets)
+        	{
+				lastLateralShot = 0;
+				RightShoot();
 			}
 		}
 	}
@@ -71,6 +102,36 @@ public class PlayerControllerScript : MonoBehaviour
 		
 	}
 
+	void LeftShoot()
+	{
+		GameObject bulletL1 = Instantiate(bulletPrefab, firePointL1.position, firePointL1.rotation);
+		Rigidbody2D bulletRigidBodyL1 = bulletL1.GetComponent<Rigidbody2D>();	
+		bulletRigidBodyL1.AddForce(firePointL1.up * bulletSpeed, ForceMode2D.Impulse);
+
+		GameObject bulletL2 = Instantiate(bulletPrefab, firePointL2.position, firePointL2.rotation);
+		Rigidbody2D bulletRigidBodyL2 = bulletL2.GetComponent<Rigidbody2D>();	
+		bulletRigidBodyL2.AddForce(firePointL2.up * bulletSpeed, ForceMode2D.Impulse);
+
+		GameObject bulletL3 = Instantiate(bulletPrefab, firePointL3.position, firePointL3.rotation);
+		Rigidbody2D bulletRigidBodyL3 = bulletL3.GetComponent<Rigidbody2D>();	
+		bulletRigidBodyL3.AddForce(firePointL3.up * bulletSpeed, ForceMode2D.Impulse);				
+	}
+
+	void RightShoot()
+	{
+		GameObject bulletR1 = Instantiate(bulletPrefab, firePointR1.position, firePointR1.rotation);
+		Rigidbody2D bulletRigidBodyR1 = bulletR1.GetComponent<Rigidbody2D>();	
+		bulletRigidBodyR1.AddForce(firePointR1.up * bulletSpeed, ForceMode2D.Impulse);
+
+		GameObject bulletR2 = Instantiate(bulletPrefab, firePointR2.position, firePointR2.rotation);
+		Rigidbody2D bulletRigidBodyR2 = bulletR2.GetComponent<Rigidbody2D>();	
+		bulletRigidBodyR2.AddForce(firePointR2.up * bulletSpeed, ForceMode2D.Impulse);
+
+		GameObject bulletR3 = Instantiate(bulletPrefab, firePointR3.position, firePointR3.rotation);
+		Rigidbody2D bulletRigidBodyR3 = bulletR3.GetComponent<Rigidbody2D>();	
+		bulletRigidBodyR3.AddForce(firePointR3.up * bulletSpeed, ForceMode2D.Impulse);				
+	}
+
 	void UpdateHealthBar()
 	{
 		healthBar.fillAmount = currentHealth / maxHealth;
@@ -79,32 +140,41 @@ public class PlayerControllerScript : MonoBehaviour
 	public void TakeDamage(float damageAmount)
     {
 		playerInvincible = true;
-		Invoke("InvencibilityOff", 3f);		
-
-        //Debug.Log($"Damage Amount: {damageAmount}");
+		Invoke("InvencibilityOff", 3f);
+		
         currentHealth -= damageAmount;
-        //Debug.Log($"Health is now: {currentHealth}");
 		UpdateHealthBar();
         if(currentHealth <= 0)
         {
 			playerInvincible = true;
-            Destroy(gameObject);
+            //Destroy(gameObject);
             SceneManager.LoadScene("GameOver");
         }
-		        
     }
 
     void InvencibilityOff()
     {
         playerInvincible = false;
     }
-    
 
 	void LookAtMouse()
 	{
 		Vector2 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
 		transform.up = mousePos - new Vector2(transform.position.x, transform.position.y);
 	}
+
+	void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(collision.gameObject.tag == "EnemyBullet")
+        {
+            TakeDamage(15);
+        }
+		if(collision.gameObject.tag == "Bullet")
+        {
+            Debug.Log("Self damage!");
+        }
+    }
+
 
 	
 	//I

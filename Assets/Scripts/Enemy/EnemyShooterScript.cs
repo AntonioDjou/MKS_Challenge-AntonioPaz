@@ -2,9 +2,9 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class EnemyScript : MonoBehaviour
+public class EnemyShooterScript : MonoBehaviour
 {
-    public static event Action<EnemyScript> OnEnemyKilled;
+    public static event Action<EnemyShooterScript> OnEnemyKilled;
     
     public float maxHealth = 30;
     float currentHealth = 0;
@@ -15,8 +15,17 @@ public class EnemyScript : MonoBehaviour
     Vector2 moveDirection;
     public float enemyMoveSpeed = 5;
     
-    Transform target;
+    
     public PlayerControllerScript playerScript;
+    Transform target;
+    bool playerInRange = false;
+
+    public GameObject bulletPrefab;
+    public Transform firePoint;
+    public float bulletSpeed = 20;
+
+    public float timeBetweenBullets = 1;
+	float lastShot;
 
     void Awake()
     {
@@ -26,17 +35,21 @@ public class EnemyScript : MonoBehaviour
     void Start()
     {
         currentHealth = maxHealth;
+        lastShot = timeBetweenBullets;
+        UpdateHealthBar();
     }
 
     void Update()
     {
-        if(target) // Checks if there's a target
+        lastShot += Time.deltaTime;
+        if(/*target && */!playerInRange && !playerScript.playerInvincible) // Checks if there's a target
         {
             Vector3 direction = (target.position - transform.position).normalized; // The Player position relative to the enemy position
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg; // The angle the enemy will rotate to chase the player
             enemyRigidBody.rotation = angle + 90;
             moveDirection = direction;
-        }       
+        }
+               
     }
 
     void FixedUpdate()
@@ -44,6 +57,14 @@ public class EnemyScript : MonoBehaviour
         if(/*target && */!playerScript.playerInvincible)
         {
             enemyRigidBody.velocity = new Vector2(moveDirection.x, moveDirection.y) * enemyMoveSpeed;
+        }
+        if(/*target && */!playerScript.playerInvincible && playerInRange)
+        {
+            if(lastShot >= timeBetweenBullets)
+        	{
+				lastShot = 0;
+				EnemyFire();
+			}
         }
     }
 
@@ -66,14 +87,32 @@ public class EnemyScript : MonoBehaviour
 
     public void TakeDamage(float damageAmount)
     {
-        //Debug.Log($"Damage Amount: {damageAmount}");
         currentHealth -= damageAmount;
-        //Debug.Log($"Health is now: {currentHealth}");
         UpdateHealthBar();
         if(currentHealth <= 0)
         {
             Destroy(gameObject);
             OnEnemyKilled?.Invoke(this);
         }
+    }
+    
+    void EnemyFire()
+    {
+        GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+		Rigidbody2D bulletRigidBody = bullet.GetComponent<Rigidbody2D>();	
+		bulletRigidBody.AddForce(firePoint.up * bulletSpeed, ForceMode2D.Impulse);
+    }
+
+    void OnTriggerEnter2D(Collider2D collider)
+    {
+        if(collider.gameObject.tag == "Player")
+        {
+            playerInRange = true;
+        }
+    }
+
+    void OnTriggerExit2D(Collider2D collider)
+    {
+        playerInRange = false;
     }
 }

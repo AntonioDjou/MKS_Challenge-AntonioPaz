@@ -13,12 +13,6 @@ public class SceneManagerScript : MonoBehaviour
 
     public static float matchDuration;
     public static float enemySpawnDuration;
-    
-    void Awake()
-    {
-        //matchSlider = FindObjectOfType<Slider>();
-        //matchTimer = GetComponentInChildren<TextMeshProUGUI>();
-    }
 
     void Start()
     {
@@ -41,6 +35,7 @@ public class SceneManagerScript : MonoBehaviour
             matchDuration = matchSlider.value * 60;
         }
         enemySpawnTimer.text = enemySpawnSlider.value.ToString() + " seconds";
+        enemySpawnDuration = enemySpawnSlider.value;
     }
 
 
@@ -49,7 +44,7 @@ public class SceneManagerScript : MonoBehaviour
         SceneManager.LoadScene("Play");
     }
 
-    public void GoToMainMenu()
+    /*public void GoToMainMenu()
     {
         SceneManager.LoadScene("MainMenu");
     }
@@ -57,5 +52,5 @@ public class SceneManagerScript : MonoBehaviour
     public void GoToGameOver()
     {
         SceneManager.LoadScene("GameOver");
-    }
+    }*/
 }

@@ -1,23 +1,32 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.SceneManagement;
+using System.Collections;
+
 public class GameManagerScript : MonoBehaviour
 {
-    float currentTime = 0f;
-    float startingTime = 90f;
+    float currentTime = 0;
+    public float enemyTimer = 3;
     public TextMeshProUGUI countDownTimer;
-    public SceneManagerScript sceneManagerScript;
+    public TextMeshProUGUI enemyCounter;
+
+    public GameObject[] enemyPrefabs;
+    
+    
     void Start()
     {
-        currentTime = SceneManagerScript.matchDuration;
+        if(SceneManagerScript.matchDuration != 0) currentTime = SceneManagerScript.matchDuration;
+        else currentTime = 30;
+        if(SceneManagerScript.enemySpawnDuration !=0) enemyTimer = SceneManagerScript.enemySpawnDuration;
+        else enemyTimer = 5;
+
+        StartCoroutine(SpawnEnemies());
     }
 
-    // Update is called once per frame
     void Update()
     {
         currentTime -= Time.deltaTime;
-        //countDownTimer.text = currentTime.ToString("0");
-
+        
         if(currentTime <= 0)
         {
             currentTime = 0;
@@ -43,4 +52,14 @@ public class GameManagerScript : MonoBehaviour
 
         countDownTimer.text = string.Format("{0:00}:{1:00}", minutes, seconds);        
     }
+
+    IEnumerator SpawnEnemies()
+    {
+        int randomEnemy = Random.Range(0, enemyPrefabs.Length);
+
+        yield return new WaitForSeconds(enemyTimer);
+        /*GameObject newEnemy = */Instantiate(enemyPrefabs[randomEnemy], new Vector3(Random.Range(-5, 5), Random.Range(-6,6), 0), Quaternion.identity);
+        StartCoroutine(SpawnEnemies());
+    }
+
 }
