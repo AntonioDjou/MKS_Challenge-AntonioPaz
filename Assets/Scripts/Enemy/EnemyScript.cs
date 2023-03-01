@@ -8,8 +8,7 @@ public class EnemyScript : MonoBehaviour
     
     public float maxHealth = 30;
     float currentHealth = 0;
-    public Image enemyHealthBarFG;
-    
+    public Image enemyHealthBarFG; // The visual Health Bar that will be updated.
     
     Rigidbody2D enemyRigidBody;
     Vector2 moveDirection;
@@ -17,6 +16,9 @@ public class EnemyScript : MonoBehaviour
     
     Transform target;
     public PlayerControllerScript playerScript;
+    public EnemySpawnerScript enemySpawnerScript;
+
+    bool updateCounter = true;
 
     void Awake()
     {
@@ -49,7 +51,7 @@ public class EnemyScript : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        if(collision.gameObject.tag == "Player")
+        if(collision.gameObject.tag == "Player" && !playerScript.playerInvincible)
         {
             playerScript.TakeDamage(10);
         }
@@ -66,14 +68,20 @@ public class EnemyScript : MonoBehaviour
 
     public void TakeDamage(float damageAmount)
     {
-        //Debug.Log($"Damage Amount: {damageAmount}");
         currentHealth -= damageAmount;
-        //Debug.Log($"Health is now: {currentHealth}");
         UpdateHealthBar();
         if(currentHealth <= 0)
         {
+            if(updateCounter && EnemySpawnerScript.enemyCounter > 0) EnemySpawnerScript.enemyCounter--;
+            Debug.Log("Here");
+            updateCounter = false;
             Destroy(gameObject);
             OnEnemyKilled?.Invoke(this);
+
+            //EnemySpawnerScript.enemyAmount--;
+            //EnemySpawnerScript.enemyCounter.text = $"Enemies: {EnemySpawnerScript.enemyAmount}";
+            
         }
+        updateCounter = true;
     }
 }

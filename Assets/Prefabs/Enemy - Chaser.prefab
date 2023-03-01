@@ -275,9 +275,9 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
+  m_Mass: 100
+  m_LinearDrag: 100
+  m_AngularDrag: 100
   m_GravityScale: 0
   m_Material: {fileID: 0}
   m_Interpolate: 0
@@ -299,7 +299,8 @@ MonoBehaviour:
   maxHealth: 30
   enemyHealthBarFG: {fileID: 7490306390902395862}
   enemyMoveSpeed: 3
-  playerScript: {fileID: 4554174936538247328, guid: 9a21954083de81f42b34a0dd3d73c6db, type: 3}
+  playerScript: {fileID: 5937142497570438856, guid: 9a21954083de81f42b34a0dd3d73c6db, type: 3}
+  enemySpawnerScript: {fileID: 5750168637890099430, guid: 6fd5200b16f798b4b922930fdad923bd, type: 3}
 --- !u!1 &7490306391373322760
 GameObject:
   m_ObjectHideFlags: 0

@@ -11,8 +11,8 @@ public class PlayerControllerScript : MonoBehaviour
 	
 	public Transform firePosition;
 	public float timeBetweenBullets = 1;
-	float lastShot;
-	[SerializeField] float lastLateralShot;
+	public static float lastShot;
+	public static float lastLateralShot;
 	
 	
 	public Image healthBar;
@@ -55,7 +55,16 @@ public class PlayerControllerScript : MonoBehaviour
 		lastShot += Time.deltaTime;
 		lastLateralShot += Time.deltaTime;
         
-		if(Input.GetButtonDown("Fire1"))
+		if(Input.GetKeyDown(KeyCode.Z))
+		{	
+			if(lastLateralShot >= timeBetweenBullets)
+        	{
+				lastLateralShot = 0;
+				LeftShoot();
+			}
+		}
+		
+		if(Input.GetKeyDown(KeyCode.X))
 		{
 			if(lastShot >= timeBetweenBullets)
         	{
@@ -64,19 +73,8 @@ public class PlayerControllerScript : MonoBehaviour
 			}
 		}
 
-		if(Input.GetKeyDown(KeyCode.Z))
+		if(Input.GetKeyDown(KeyCode.C))
 		{
-			
-			if(lastLateralShot >= timeBetweenBullets)
-        	{
-				lastLateralShot = 0;
-				LeftShoot();
-			}
-		}
-
-		if(Input.GetKeyDown(KeyCode.X))
-		{
-			
 			if(lastLateralShot >= timeBetweenBullets)
         	{
 				lastLateralShot = 0;
@@ -139,11 +137,16 @@ public class PlayerControllerScript : MonoBehaviour
 
 	public void TakeDamage(float damageAmount)
     {
+		if(!playerInvincible)
+		{
+			currentHealth -= damageAmount;
+			UpdateHealthBar();
+		}
 		playerInvincible = true;
 		Invoke("InvencibilityOff", 3f);
 		
-        currentHealth -= damageAmount;
-		UpdateHealthBar();
+		Debug.Log($"Health is now: {currentHealth}");
+
         if(currentHealth <= 0)
         {
 			playerInvincible = true;

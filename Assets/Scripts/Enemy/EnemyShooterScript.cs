@@ -17,6 +17,8 @@ public class EnemyShooterScript : MonoBehaviour
     
     
     public PlayerControllerScript playerScript;
+    public EnemySpawnerScript enemySpawnerScript;
+
     Transform target;
     bool playerInRange = false;
 
@@ -26,6 +28,8 @@ public class EnemyShooterScript : MonoBehaviour
 
     public float timeBetweenBullets = 1;
 	float lastShot;
+
+    bool updateCounter = true;
 
     void Awake()
     {
@@ -48,8 +52,7 @@ public class EnemyShooterScript : MonoBehaviour
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg; // The angle the enemy will rotate to chase the player
             enemyRigidBody.rotation = angle + 90;
             moveDirection = direction;
-        }
-               
+        }          
     }
 
     void FixedUpdate()
@@ -70,7 +73,7 @@ public class EnemyShooterScript : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        if(collision.gameObject.tag == "Player")
+        if(collision.gameObject.tag == "Player" && !playerScript.playerInvincible)
         {
             playerScript.TakeDamage(10);
         }
@@ -91,9 +94,18 @@ public class EnemyShooterScript : MonoBehaviour
         UpdateHealthBar();
         if(currentHealth <= 0)
         {
+            Debug.Log(updateCounter);
+            if(updateCounter && EnemySpawnerScript.enemyCounter > 0) EnemySpawnerScript.enemyCounter--;
+            Debug.Log("Enemy Shooter");
+            updateCounter = false;
             Destroy(gameObject);
             OnEnemyKilled?.Invoke(this);
+
+            //EnemySpawnerScript.enemyAmount--;
+            //EnemySpawnerScript.enemyCounter.text = $"Enemies: {EnemySpawnerScript.enemyAmount}";
+            
         }
+        updateCounter = true;
     }
     
     void EnemyFire()

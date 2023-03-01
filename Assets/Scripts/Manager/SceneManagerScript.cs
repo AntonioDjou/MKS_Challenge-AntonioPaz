@@ -44,7 +44,7 @@ public class SceneManagerScript : MonoBehaviour
         SceneManager.LoadScene("Play");
     }
 
-    /*public void GoToMainMenu()
+    public void GoToMainMenu()
     {
         SceneManager.LoadScene("MainMenu");
     }
@@ -52,5 +52,5 @@ public class SceneManagerScript : MonoBehaviour
     public void GoToGameOver()
     {
         SceneManager.LoadScene("GameOver");
-    }*/
+    }
 }

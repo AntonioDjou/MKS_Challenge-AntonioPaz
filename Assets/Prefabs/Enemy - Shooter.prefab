@@ -514,7 +514,8 @@ MonoBehaviour:
   maxHealth: 50
   enemyHealthBarFG: {fileID: 1043018588216416837}
   enemyMoveSpeed: 15
-  playerScript: {fileID: 4554174936538247328, guid: 9a21954083de81f42b34a0dd3d73c6db, type: 3}
+  playerScript: {fileID: 5937142497570438856, guid: 9a21954083de81f42b34a0dd3d73c6db, type: 3}
+  enemySpawnerScript: {fileID: 5750168637890099430, guid: 6fd5200b16f798b4b922930fdad923bd, type: 3}
   bulletPrefab: {fileID: 2555262746864836454, guid: 22c9a9498be69204286b89d364bd812b, type: 3}
   firePoint: {fileID: 1043018588180446606}
   bulletSpeed: 20

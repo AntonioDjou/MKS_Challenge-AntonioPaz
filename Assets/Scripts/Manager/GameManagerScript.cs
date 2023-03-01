@@ -1,30 +1,51 @@
-using UnityEngine;
-using TMPro;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using UnityEngine.UI;
+using UnityEngine;
+using TMPro;
 
 public class GameManagerScript : MonoBehaviour
 {
+    [SerializeField] TextMeshProUGUI countDownTimer;
     float currentTime = 0;
-    public float enemyTimer = 3;
-    public TextMeshProUGUI countDownTimer;
-    public TextMeshProUGUI enemyCounter;
+    private IEnumerator countUp;
 
-    public GameObject[] enemyPrefabs;
-    
-    
+    [Space(10)]
+    public Button zButton;
+    public Slider zSlider;
+    public Image zCooldown;
+
+    [Space(10)]
+    public Button xButton;
+    public Slider xSlider;
+    public Image xCooldown;
+
+    [Space(10)]
+    public Button cButton;
+    public Slider cSlider;
+    public Image cCooldown;
+
     void Start()
     {
         if(SceneManagerScript.matchDuration != 0) currentTime = SceneManagerScript.matchDuration;
-        else currentTime = 30;
-        if(SceneManagerScript.enemySpawnDuration !=0) enemyTimer = SceneManagerScript.enemySpawnDuration;
-        else enemyTimer = 5;
-
-        StartCoroutine(SpawnEnemies());
+        else currentTime = 50;
     }
 
     void Update()
     {
+        xCooldown.fillAmount = PlayerControllerScript.lastShot;
+        zCooldown.fillAmount = PlayerControllerScript.lastLateralShot;
+        cCooldown.fillAmount = PlayerControllerScript.lastLateralShot;
+        
+        if(zCooldown.fillAmount >= 1) EnableZButton();
+        else DisableZButton();
+
+        if(xCooldown.fillAmount >= 1) EnableXButton();
+        else DisableXButton();
+
+        if(cCooldown.fillAmount >= 1) EnableCButton();
+        else DisableCButton();
+
         currentTime -= Time.deltaTime;
         
         if(currentTime <= 0)
@@ -33,7 +54,6 @@ public class GameManagerScript : MonoBehaviour
             countDownTimer.color = Color.red;
             SceneManager.LoadScene("GameOver");
         }
-
         DisplayTime(currentTime);
     }
 
@@ -53,13 +73,72 @@ public class GameManagerScript : MonoBehaviour
         countDownTimer.text = string.Format("{0:00}:{1:00}", minutes, seconds);        
     }
 
-    IEnumerator SpawnEnemies()
+    public void DisableZButton()
     {
-        int randomEnemy = Random.Range(0, enemyPrefabs.Length);
-
-        yield return new WaitForSeconds(enemyTimer);
-        /*GameObject newEnemy = */Instantiate(enemyPrefabs[randomEnemy], new Vector3(Random.Range(-5, 5), Random.Range(-6,6), 0), Quaternion.identity);
-        StartCoroutine(SpawnEnemies());
+        if(zButton.interactable) //To make sure it will change the alpha only once
+        {
+            Image[] childrenImage = zSlider.GetComponentsInChildren<Image>(); //Get all the Children
+            foreach(Image img in childrenImage) //For all of them
+            {
+                img.color -= new Color(0,0,0,0.9f); //Change the transparency of it.
+            }
+        }
+        zButton.interactable = false; //Cannot be interactible while on Cooldown.        
     }
 
+    public void EnableZButton()
+    {
+        Image[] childrenImage = zSlider.GetComponentsInChildren<Image>(); //Get all the Children
+        foreach(Image img in childrenImage) //For all of them
+        {
+            img.color += new Color(0,0,0,0.9f); //Change back the transparency to normal.
+        }
+        zButton.interactable = true; //Gets interactible again after Cooldown.
+    }
+
+    public void DisableXButton()
+    {
+        if(xButton.interactable) //To make sure it will change the alpha only once
+        {
+            Image[] childrenImage = xSlider.GetComponentsInChildren<Image>(); //Get all the Children
+            foreach(Image img in childrenImage) //For all of them
+            {
+                img.color -= new Color(0,0,0,0.9f); //Change the transparency of it.
+            }
+        }
+        xButton.interactable = false; //Cannot be interactible while on Cooldown.        
+    }
+
+    public void EnableXButton()
+    {
+        Image[] childrenImage = xSlider.GetComponentsInChildren<Image>(); //Get all the Children
+        foreach(Image img in childrenImage) //For all of them
+        {
+            img.color += new Color(0,0,0,0.9f); //Change back the transparency to normal.
+        }
+        xButton.interactable = true; //Gets interactible again after Cooldown.
+    }
+
+    public void DisableCButton()
+    {
+        if(cButton.interactable) //To make sure it will change the alpha only once
+        {
+            Image[] childrenImage = cSlider.GetComponentsInChildren<Image>(); //Get all the Children
+            foreach(Image img in childrenImage) //For all of them
+            {
+                img.color -= new Color(0,0,0,0.9f); //Change the transparency of it.
+            }
+        }
+        cButton.interactable = false; //Cannot be interactible while on Cooldown.        
+    }
+
+    public void EnableCButton()
+    {
+        Image[] childrenImage = cSlider.GetComponentsInChildren<Image>(); //Get all the Children
+        foreach(Image img in childrenImage) //For all of them
+        {
+            img.color += new Color(0,0,0,0.9f); //Change back the transparency to normal.
+        }
+        cButton.interactable = true; //Gets interactible again after Cooldown.
+    }
 }
