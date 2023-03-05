@@ -15,15 +15,17 @@ public class EnemyScript : MonoBehaviour
     public float enemyMoveSpeed = 5;
     
     Transform target;
-    public PlayerControllerScript playerScript;
+    //public PlayerControllerScript playerScript;
     public EnemySpawnerScript enemySpawnerScript;
 
+    Animator enemyAnimator;
     bool updateCounter = true;
 
     void Awake()
     {
         enemyRigidBody = GetComponent<Rigidbody2D>();
         target = GameObject.Find("Player").transform;
+        enemyAnimator = GetComponent<Animator>();
     }
     void Start()
     {
@@ -32,7 +34,7 @@ public class EnemyScript : MonoBehaviour
 
     void Update()
     {
-        if(target) // Checks if there's a target
+        if(/*target &&*/ !PlayerControllerScript.playerInvincible) // Checks if there's a target
         {
             Vector3 direction = (target.position - transform.position).normalized; // The Player position relative to the enemy position
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg; // The angle the enemy will rotate to chase the player
@@ -43,7 +45,7 @@ public class EnemyScript : MonoBehaviour
 
     void FixedUpdate()
     {
-        if(/*target && */!playerScript.playerInvincible)
+        if(/*target && */!PlayerControllerScript.playerInvincible)
         {
             enemyRigidBody.velocity = new Vector2(moveDirection.x, moveDirection.y) * enemyMoveSpeed;
         }
@@ -51,9 +53,15 @@ public class EnemyScript : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        if(collision.gameObject.tag == "Player" && !playerScript.playerInvincible)
+        if(collision.gameObject.tag == "Player" && !PlayerControllerScript.playerInvincible)
         {
-            playerScript.TakeDamage(10);
+            enemyAnimator.SetBool("isDead", true);
+
+
+            enemyRigidBody.isKinematic = true;
+            enemyHealthBarFG.fillAmount = 0;
+            
+            Invoke("EnemyDestroy", 1f);
         }
         if(collision.gameObject.tag == "Bullet")
         {
@@ -73,7 +81,6 @@ public class EnemyScript : MonoBehaviour
         if(currentHealth <= 0)
         {
             if(updateCounter && EnemySpawnerScript.enemyCounter > 0) EnemySpawnerScript.enemyCounter--;
-            Debug.Log("Here");
             updateCounter = false;
             Destroy(gameObject);
             OnEnemyKilled?.Invoke(this);
@@ -83,5 +90,11 @@ public class EnemyScript : MonoBehaviour
             
         }
         updateCounter = true;
+    }
+
+    void EnemyDestroy()
+    {
+        Destroy(this.gameObject);
+        TakeDamage(maxHealth);
     }
 }

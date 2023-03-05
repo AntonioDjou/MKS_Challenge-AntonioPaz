@@ -1009,9 +1009,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1648623614}
+      - m_Target: {fileID: 1648623615}
         m_TargetAssemblyTypeName: SceneManagerScript, Assembly-CSharp
-        m_MethodName: 
+        m_MethodName: GoToPlayScene
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

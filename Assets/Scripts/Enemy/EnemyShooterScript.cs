@@ -31,6 +31,8 @@ public class EnemyShooterScript : MonoBehaviour
 
     bool updateCounter = true;
 
+    public Sprite /*shipSprite, */shipDamage1, shipDamage2;
+
     void Awake()
     {
         enemyRigidBody = GetComponent<Rigidbody2D>();
@@ -46,7 +48,7 @@ public class EnemyShooterScript : MonoBehaviour
     void Update()
     {
         lastShot += Time.deltaTime;
-        if(/*target && */!playerInRange && !playerScript.playerInvincible) // Checks if there's a target
+        if(/*target && !playerInRange &&*/ !PlayerControllerScript.playerInvincible) // Checks if there's a target
         {
             Vector3 direction = (target.position - transform.position).normalized; // The Player position relative to the enemy position
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg; // The angle the enemy will rotate to chase the player
@@ -57,11 +59,11 @@ public class EnemyShooterScript : MonoBehaviour
 
     void FixedUpdate()
     {
-        if(/*target && */!playerScript.playerInvincible)
+        if(/*target && */!PlayerControllerScript.playerInvincible)
         {
             enemyRigidBody.velocity = new Vector2(moveDirection.x, moveDirection.y) * enemyMoveSpeed;
         }
-        if(/*target && */!playerScript.playerInvincible && playerInRange)
+        if(/*target && */!PlayerControllerScript.playerInvincible && playerInRange)
         {
             if(lastShot >= timeBetweenBullets)
         	{
@@ -73,10 +75,10 @@ public class EnemyShooterScript : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        if(collision.gameObject.tag == "Player" && !playerScript.playerInvincible)
+        /*if(collision.gameObject.tag == "Player" && !PlayerControllerScript.playerInvincible)
         {
             playerScript.TakeDamage(10);
-        }
+        }*/
         if(collision.gameObject.tag == "Bullet")
         {
             TakeDamage(10);
@@ -86,6 +88,8 @@ public class EnemyShooterScript : MonoBehaviour
     void UpdateHealthBar()
 	{
         enemyHealthBarFG.fillAmount = currentHealth / maxHealth;
+        if(enemyHealthBarFG.fillAmount <= 0.6 && enemyHealthBarFG.fillAmount >= 0.4) GetComponent<SpriteRenderer>().sprite = shipDamage1;
+        else if (enemyHealthBarFG.fillAmount <= 0.4) GetComponent<SpriteRenderer>().sprite = shipDamage2;
 	}
 
     public void TakeDamage(float damageAmount)
@@ -94,9 +98,7 @@ public class EnemyShooterScript : MonoBehaviour
         UpdateHealthBar();
         if(currentHealth <= 0)
         {
-            Debug.Log(updateCounter);
             if(updateCounter && EnemySpawnerScript.enemyCounter > 0) EnemySpawnerScript.enemyCounter--;
-            Debug.Log("Enemy Shooter");
             updateCounter = false;
             Destroy(gameObject);
             OnEnemyKilled?.Invoke(this);
