@@ -13,27 +13,30 @@ public class EnemySpawnerScript : MonoBehaviour
 
     void Start()
     {
-        enemyCounter = 0;
+        EnemySpawnerScript.enemyCounter = 0;
         if(SceneManagerScript.enemySpawnDuration !=0) enemyTimer = SceneManagerScript.enemySpawnDuration;
         else enemyTimer = 5;
-        //enemyText.text = $"Enemies: {enemyCounter}";
+        
+        //enemyText.text = $"Enemies: {EnemySpawnerScript.enemyCounter.ToString()}";
 
         StartCoroutine(SpawnEnemies());
     }
 
-    /*public void DecreaseEnemyCounter()
+    public void DecreaseEnemyCounter()
     {
-        if(enemyCounter > 0) 
-        {
-            enemyCounter--;
-            Debug.Log(enemyCounter);
-            //enemyText.text = $"Enemies: {enemyCounter}";
-        }      
-    }*/
+        //Debug.Log("EnemyDecrease Script!");
+        //if(enemyCounter > 0) 
+        //{
+        Debug.Log($"Enemy counter before reducing: {EnemySpawnerScript.enemyCounter.ToString()}");
+        EnemySpawnerScript.enemyCounter--;
+        Debug.Log($"EnemyReduced to: {EnemySpawnerScript.enemyCounter.ToString()}");
+        //enemyText.text = EnemySpawnerScript.enemyCounter.ToString();
+        //}      
+    }
 
     void FixedUpdate()
     {
-        enemyText.text = $"Enemies: {enemyCounter}";
+        enemyText.text = $"Enemies: {EnemySpawnerScript.enemyCounter}";
     }
 
     IEnumerator SpawnEnemies()
@@ -41,9 +44,12 @@ public class EnemySpawnerScript : MonoBehaviour
         int randomEnemy = Random.Range(0, enemyPrefabs.Length);
 
         yield return new WaitForSeconds(enemyTimer);
-        Instantiate(enemyPrefabs[randomEnemy], new Vector3(Random.Range(-10, 10), Random.Range(-10,10), 0), Quaternion.identity);
-        enemyCounter++;
-        //enemyText.text = $"Enemies: {enemyCounter}";
+        Instantiate(enemyPrefabs[randomEnemy], new Vector3(Random.Range(-15, 15), Random.Range(-15,15), 0), Quaternion.identity);
+        
+        EnemySpawnerScript.enemyCounter++;
+        //Debug.Log($"Enemy Increased to: {EnemySpawnerScript.enemyCounter.ToString()}");
+        
+        //enemyText.text = $"Enemies: {EnemySpawnerScript.enemyCounter.ToString()}";
         StartCoroutine(SpawnEnemies());
     }
 }

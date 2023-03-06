@@ -90,6 +90,11 @@ public class BulletScript : MonoBehaviour
         if(collision.gameObject.tag != "Bullet")
         {
             Destroy(gameObject);
+        }
+        if(collision.gameObject.tag == "EnemyBullet")
+        {
+            //Destroy(gameObject);
+            Destroy(collision.gameObject);
         }             
     }
 
@@ -97,5 +102,4 @@ public class BulletScript : MonoBehaviour
     {
         Destroy(gameObject);
     }
-
 }

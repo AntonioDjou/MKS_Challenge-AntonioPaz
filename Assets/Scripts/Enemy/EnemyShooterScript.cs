@@ -6,32 +6,36 @@ public class EnemyShooterScript : MonoBehaviour
 {
     public static event Action<EnemyShooterScript> OnEnemyKilled;
     
+    public float enemyMoveSpeed = 5;
     public float maxHealth = 30;
     float currentHealth = 0;
+
+    [Space(10)]
     public Image enemyHealthBarFG;
-    
-    
+
     Rigidbody2D enemyRigidBody;
     Vector2 moveDirection;
-    public float enemyMoveSpeed = 5;
     
-    
-    public PlayerControllerScript playerScript;
-    public EnemySpawnerScript enemySpawnerScript;
-
     Transform target;
     bool playerInRange = false;
 
+    [Space(10)]
     public GameObject bulletPrefab;
     public Transform firePoint;
-    public float bulletSpeed = 20;
 
+    [Space(10)]    
+    public float bulletSpeed = 20;
     public float timeBetweenBullets = 1;
 	float lastShot;
 
-    bool updateCounter = true;
+    //bool updateCounter = true;
 
-    public Sprite /*shipSprite, */shipDamage1, shipDamage2;
+    [Space(10)]
+    
+    public Sprite shipDamage1, shipDamage2;
+    float lastDelete = 0;
+
+    public EnemySpawnerScript enemySpawnerScript;
 
     void Awake()
     {
@@ -47,8 +51,9 @@ public class EnemyShooterScript : MonoBehaviour
 
     void Update()
     {
+        lastDelete += Time.deltaTime;
         lastShot += Time.deltaTime;
-        if(/*target && !playerInRange &&*/ !PlayerControllerScript.playerInvincible) // Checks if there's a target
+        if(!PlayerControllerScript.playerInvincible) // Checks if there's a target
         {
             Vector3 direction = (target.position - transform.position).normalized; // The Player position relative to the enemy position
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg; // The angle the enemy will rotate to chase the player
@@ -59,11 +64,11 @@ public class EnemyShooterScript : MonoBehaviour
 
     void FixedUpdate()
     {
-        if(/*target && */!PlayerControllerScript.playerInvincible)
+        if(!PlayerControllerScript.playerInvincible)
         {
             enemyRigidBody.velocity = new Vector2(moveDirection.x, moveDirection.y) * enemyMoveSpeed;
         }
-        if(/*target && */!PlayerControllerScript.playerInvincible && playerInRange)
+        if(!PlayerControllerScript.playerInvincible && playerInRange)
         {
             if(lastShot >= timeBetweenBullets)
         	{
@@ -75,10 +80,6 @@ public class EnemyShooterScript : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        /*if(collision.gameObject.tag == "Player" && !PlayerControllerScript.playerInvincible)
-        {
-            playerScript.TakeDamage(10);
-        }*/
         if(collision.gameObject.tag == "Bullet")
         {
             TakeDamage(10);
@@ -98,16 +99,18 @@ public class EnemyShooterScript : MonoBehaviour
         UpdateHealthBar();
         if(currentHealth <= 0)
         {
-            if(updateCounter && EnemySpawnerScript.enemyCounter > 0) EnemySpawnerScript.enemyCounter--;
-            updateCounter = false;
+            if(lastDelete > 1f) 
+            {
+                Debug.Log($"Last Delete: {lastDelete}");
+                lastDelete = 0;
+                //EnemySpawnerScript.enemyCounter--;
+                
+                //Debug.Log($"EnemyShooter TakeDamage Debug: {EnemySpawnerScript.enemyCounter}");
+                enemySpawnerScript.DecreaseEnemyCounter();
+            }
             Destroy(gameObject);
-            OnEnemyKilled?.Invoke(this);
-
-            //EnemySpawnerScript.enemyAmount--;
-            //EnemySpawnerScript.enemyCounter.text = $"Enemies: {EnemySpawnerScript.enemyAmount}";
-            
+            //OnEnemyKilled?.Invoke(this);
         }
-        updateCounter = true;
     }
     
     void EnemyFire()

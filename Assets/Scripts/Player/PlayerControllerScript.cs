@@ -40,6 +40,7 @@ public class PlayerControllerScript : MonoBehaviour
 	private DamageFlash _damageFlash;
 	Animator playerAnimatorController;
 
+	public Sprite shipDamage1, shipDamage2;
 	
 	
 	void Start(){
@@ -71,7 +72,7 @@ public class PlayerControllerScript : MonoBehaviour
 		lastShot += Time.deltaTime;
 		lastLateralShot += Time.deltaTime;
         
-		if(Input.GetKeyDown(KeyCode.Z))
+		if(Input.GetKeyDown(KeyCode.Q))
 		{	
 			if(lastLateralShot >= timeBetweenBullets)
         	{
@@ -80,7 +81,7 @@ public class PlayerControllerScript : MonoBehaviour
 			}
 		}
 		
-		if(Input.GetKeyDown(KeyCode.X))
+		if(Input.GetKeyDown(KeyCode.Alpha2))
 		{
 			if(lastShot >= timeBetweenBullets)
         	{
@@ -89,7 +90,7 @@ public class PlayerControllerScript : MonoBehaviour
 			}
 		}
 
-		if(Input.GetKeyDown(KeyCode.C))
+		if(Input.GetKeyDown(KeyCode.E))
 		{
 			if(lastLateralShot >= timeBetweenBullets)
         	{
@@ -118,22 +119,22 @@ public class PlayerControllerScript : MonoBehaviour
 
 	void LeftShoot()
 	{
-		currentL2Position = firePointL2;
-		currentL3Position = firePointL3;
+		//currentL2Position = firePointL2;
+		//currentL3Position = firePointL3;
 
 		GameObject bulletL1 = Instantiate(bulletPrefab, firePointL1.position, firePointL1.rotation);
 		Rigidbody2D bulletRigidBodyL1 = bulletL1.GetComponent<Rigidbody2D>();	
 		bulletRigidBodyL1.AddForce(firePointL1.up * bulletSpeed, ForceMode2D.Impulse);
 
-		Invoke("DelayShootL2", 0.02f);
-		/*GameObject bulletL2 = Instantiate(bulletPrefab, firePointL2.position, firePointL2.rotation);
+		//Invoke("DelayShootL2", 0.02f);
+		GameObject bulletL2 = Instantiate(bulletPrefab, firePointL2.position, firePointL2.rotation);
 		Rigidbody2D bulletRigidBodyL2 = bulletL2.GetComponent<Rigidbody2D>();	
 		bulletRigidBodyL2.AddForce(firePointL2.up * bulletSpeed, ForceMode2D.Impulse);
 
 		GameObject bulletL3 = Instantiate(bulletPrefab, firePointL3.position, firePointL3.rotation);
 		Rigidbody2D bulletRigidBodyL3 = bulletL3.GetComponent<Rigidbody2D>();	
 		bulletRigidBodyL3.AddForce(firePointL3.up * bulletSpeed, ForceMode2D.Impulse);
-		*/				
+					
 	}
 
 	void DelayShootL2()
@@ -154,15 +155,15 @@ public class PlayerControllerScript : MonoBehaviour
 
 	void RightShoot()
 	{
-		currentR2Position = firePointR2;
-		currentR3Position = firePointR3;
+		//currentR2Position = firePointR2;
+		//currentR3Position = firePointR3;
 
 		GameObject bulletR1 = Instantiate(bulletPrefab, firePointR1.position, firePointR1.rotation);
 		Rigidbody2D bulletRigidBodyR1 = bulletR1.GetComponent<Rigidbody2D>();	
 		bulletRigidBodyR1.AddForce(firePointR1.up * bulletSpeed, ForceMode2D.Impulse);
 
-		Invoke("DelayShootR2", 0.02f);
-		/*
+		//Invoke("DelayShootR2", 0.02f);
+		
 		GameObject bulletR2 = Instantiate(bulletPrefab, firePointR2.position, firePointR2.rotation);
 		Rigidbody2D bulletRigidBodyR2 = bulletR2.GetComponent<Rigidbody2D>();	
 		bulletRigidBodyR2.AddForce(firePointR2.up * bulletSpeed, ForceMode2D.Impulse);
@@ -170,7 +171,7 @@ public class PlayerControllerScript : MonoBehaviour
 		GameObject bulletR3 = Instantiate(bulletPrefab, firePointR3.position, firePointR3.rotation);
 		Rigidbody2D bulletRigidBodyR3 = bulletR3.GetComponent<Rigidbody2D>();	
 		bulletRigidBodyR3.AddForce(firePointR3.up * bulletSpeed, ForceMode2D.Impulse);				
-		*/
+		
 	}
 
 	void DelayShootR2()
@@ -192,6 +193,8 @@ public class PlayerControllerScript : MonoBehaviour
 	void UpdateHealthBar()
 	{
 		healthBar.fillAmount = currentHealth / maxHealth;
+		if(healthBar.fillAmount <= 0.6 && healthBar.fillAmount >= 0.4) GetComponent<SpriteRenderer>().sprite = shipDamage1;
+        else if (healthBar.fillAmount <= 0.4) GetComponent<SpriteRenderer>().sprite = shipDamage2;
 	}
 
 	public void TakeDamage(float damageAmount)
@@ -210,9 +213,7 @@ public class PlayerControllerScript : MonoBehaviour
 			
 			Invoke("GameOverDelay", 1f);
         }
-
-		//Damage Flash Effect
-		_damageFlash.CallDamageFlash();
+		_damageFlash.CallDamageFlash(); //Damage Flash Effect
     }
 
     void InvencibilityOff()
@@ -226,11 +227,13 @@ public class PlayerControllerScript : MonoBehaviour
         playerInvincible = false;
     }
 
+	/*
 	void LookAtMouse()
 	{
 		Vector2 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
 		transform.up = mousePos - new Vector2(transform.position.x, transform.position.y);
 	}
+	*/
 
 	void OnCollisionEnter2D(Collision2D collision)
     {
@@ -246,11 +249,6 @@ public class PlayerControllerScript : MonoBehaviour
         {
             TakeDamage(10);
         }
-
-		/*if(collision.gameObject.tag == "Bullet")
-        {
-            Debug.Log("Self damage!");
-        }*/
     }
 
 

@@ -6,20 +6,22 @@ public class EnemyScript : MonoBehaviour
 {
     public static event Action<EnemyScript> OnEnemyKilled;
     
+    public float enemyMoveSpeed = 4;
     public float maxHealth = 30;
     float currentHealth = 0;
-    public Image enemyHealthBarFG; // The visual Health Bar that will be updated.
     
     Rigidbody2D enemyRigidBody;
     Vector2 moveDirection;
-    public float enemyMoveSpeed = 5;
     
-    Transform target;
-    //public PlayerControllerScript playerScript;
+    [Space(5)]
+    public Image enemyHealthBarFG; // The visual Health Bar that will be updated.
     public EnemySpawnerScript enemySpawnerScript;
 
+    Transform target;
     Animator enemyAnimator;
-    bool updateCounter = true;
+
+    public Sprite shipDamage1, shipDamage2;
+    float lastDelete = 0;
 
     void Awake()
     {
@@ -30,22 +32,24 @@ public class EnemyScript : MonoBehaviour
     void Start()
     {
         currentHealth = maxHealth;
+        UpdateHealthBar();
     }
 
     void Update()
     {
-        if(/*target &&*/ !PlayerControllerScript.playerInvincible) // Checks if there's a target
+        lastDelete += Time.deltaTime;
+        if(!PlayerControllerScript.playerInvincible)
         {
             Vector3 direction = (target.position - transform.position).normalized; // The Player position relative to the enemy position
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg; // The angle the enemy will rotate to chase the player
-            enemyRigidBody.rotation = angle + 90;
+            enemyRigidBody.rotation = angle + 90; // Adjusts the correct angle for the sprite
             moveDirection = direction;
         }       
     }
 
     void FixedUpdate()
     {
-        if(/*target && */!PlayerControllerScript.playerInvincible)
+        if(!PlayerControllerScript.playerInvincible)
         {
             enemyRigidBody.velocity = new Vector2(moveDirection.x, moveDirection.y) * enemyMoveSpeed;
         }
@@ -55,13 +59,18 @@ public class EnemyScript : MonoBehaviour
     {
         if(collision.gameObject.tag == "Player" && !PlayerControllerScript.playerInvincible)
         {
-            enemyAnimator.SetBool("isDead", true);
-
-
-            enemyRigidBody.isKinematic = true;
+            enemyAnimator.SetBool("isDead", true); // Starts the Death animation
+            if(lastDelete > 1.5f) 
+            {
+                lastDelete = 0;
+                Debug.Log($"Last Delete: {lastDelete}");
+                enemySpawnerScript.DecreaseEnemyCounter();
+            }
+            enemyRigidBody.isKinematic = true; // Stops the enemy from moving after death
             enemyHealthBarFG.fillAmount = 0;
-            
-            Invoke("EnemyDestroy", 1f);
+
+            //Debug.Log($"EnemyCollision Debug: {enemyCounter}");
+            Invoke("EnemyDestroy", 1f); // Wait 1 second for the explosion animation
         }
         if(collision.gameObject.tag == "Bullet")
         {
@@ -72,6 +81,8 @@ public class EnemyScript : MonoBehaviour
     void UpdateHealthBar()
 	{
         enemyHealthBarFG.fillAmount = currentHealth / maxHealth;
+        if(enemyHealthBarFG.fillAmount <= 0.7 && enemyHealthBarFG.fillAmount >= 0.4) GetComponent<SpriteRenderer>().sprite = shipDamage1;
+        else if (enemyHealthBarFG.fillAmount <= 0.4) GetComponent<SpriteRenderer>().sprite = shipDamage2;
 	}
 
     public void TakeDamage(float damageAmount)
@@ -80,19 +91,20 @@ public class EnemyScript : MonoBehaviour
         UpdateHealthBar();
         if(currentHealth <= 0)
         {
-            if(updateCounter && EnemySpawnerScript.enemyCounter > 0) EnemySpawnerScript.enemyCounter--;
-            updateCounter = false;
+            if(lastDelete > 1f) 
+            {
+                Debug.Log($"Last Delete: {lastDelete}");
+                lastDelete = 0;
+                //EnemySpawnerScript.enemyCounter--;
+                //Debug.Log($"Enemy TakeDamage Debug: {EnemySpawnerScript.enemyCounter}");
+                enemySpawnerScript.DecreaseEnemyCounter();
+            }
             Destroy(gameObject);
-            OnEnemyKilled?.Invoke(this);
-
-            //EnemySpawnerScript.enemyAmount--;
-            //EnemySpawnerScript.enemyCounter.text = $"Enemies: {EnemySpawnerScript.enemyAmount}";
-            
+            //OnEnemyKilled?.Invoke(this);
         }
-        updateCounter = true;
     }
 
-    void EnemyDestroy()
+    void EnemyDestroy() // Destroys the enemy after colliding with the Player.
     {
         Destroy(this.gameObject);
         TakeDamage(maxHealth);

@@ -392,7 +392,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1043018589297127497}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 20.75, y: 5.23, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 4, y: 4, z: 1}
   m_Children:
   - {fileID: 1043018588863981572}
@@ -511,17 +511,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fff4f6ba3e62c54da4a61c93f887730, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enemyMoveSpeed: 15
   maxHealth: 50
   enemyHealthBarFG: {fileID: 1043018588216416837}
-  enemyMoveSpeed: 15
-  playerScript: {fileID: 5937142497570438856, guid: 9a21954083de81f42b34a0dd3d73c6db, type: 3}
-  enemySpawnerScript: {fileID: 5750168637890099430, guid: 6fd5200b16f798b4b922930fdad923bd, type: 3}
   bulletPrefab: {fileID: 2555262746864836454, guid: 22c9a9498be69204286b89d364bd812b, type: 3}
   firePoint: {fileID: 1043018588180446606}
   bulletSpeed: 20
   timeBetweenBullets: 1
   shipDamage1: {fileID: 21300000, guid: 4fd47f8664d8b8148b924306f6f71bd9, type: 3}
   shipDamage2: {fileID: 21300000, guid: 4b4489fcdfd12af4582925a57b2f07df, type: 3}
+  enemySpawnerScript: {fileID: 7160560796540934088, guid: 137e569b90b0f514a90841b0393b80de, type: 3}
 --- !u!58 &1043018589297127490
 CircleCollider2D:
   m_ObjectHideFlags: 0
