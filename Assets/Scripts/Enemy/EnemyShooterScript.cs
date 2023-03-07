@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class EnemyShooterScript : MonoBehaviour
 {
-    public static event Action<EnemyShooterScript> OnEnemyKilled;
+    //public static event Action<EnemyShooterScript> OnEnemyKilled;
     
     public float enemyMoveSpeed = 5;
     public float maxHealth = 30;
@@ -27,8 +27,6 @@ public class EnemyShooterScript : MonoBehaviour
     public float bulletSpeed = 20;
     public float timeBetweenBullets = 1;
 	float lastShot;
-
-    //bool updateCounter = true;
 
     [Space(10)]
     
@@ -99,13 +97,9 @@ public class EnemyShooterScript : MonoBehaviour
         UpdateHealthBar();
         if(currentHealth <= 0)
         {
-            if(lastDelete > 1f) 
+            if(lastDelete > 1f) // To make sure not to decrease the enemy amount twice
             {
-                Debug.Log($"Last Delete: {lastDelete}");
                 lastDelete = 0;
-                //EnemySpawnerScript.enemyCounter--;
-                
-                //Debug.Log($"EnemyShooter TakeDamage Debug: {EnemySpawnerScript.enemyCounter}");
                 enemySpawnerScript.DecreaseEnemyCounter();
             }
             Destroy(gameObject);

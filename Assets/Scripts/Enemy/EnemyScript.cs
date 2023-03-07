@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class EnemyScript : MonoBehaviour
 {
-    public static event Action<EnemyScript> OnEnemyKilled;
+    //public static event Action<EnemyScript> OnEnemyKilled;
     
     public float enemyMoveSpeed = 4;
     public float maxHealth = 30;
@@ -60,16 +60,14 @@ public class EnemyScript : MonoBehaviour
         if(collision.gameObject.tag == "Player" && !PlayerControllerScript.playerInvincible)
         {
             enemyAnimator.SetBool("isDead", true); // Starts the Death animation
-            if(lastDelete > 1.5f) 
+            if(lastDelete > 1.5f) // To make sure not to decrease the enemy amount twice
             {
                 lastDelete = 0;
-                Debug.Log($"Last Delete: {lastDelete}");
                 enemySpawnerScript.DecreaseEnemyCounter();
             }
             enemyRigidBody.isKinematic = true; // Stops the enemy from moving after death
             enemyHealthBarFG.fillAmount = 0;
 
-            //Debug.Log($"EnemyCollision Debug: {enemyCounter}");
             Invoke("EnemyDestroy", 1f); // Wait 1 second for the explosion animation
         }
         if(collision.gameObject.tag == "Bullet")
@@ -91,12 +89,9 @@ public class EnemyScript : MonoBehaviour
         UpdateHealthBar();
         if(currentHealth <= 0)
         {
-            if(lastDelete > 1f) 
+            if(lastDelete > 1f) // To make sure not to decrease the enemy amount twice
             {
-                Debug.Log($"Last Delete: {lastDelete}");
                 lastDelete = 0;
-                //EnemySpawnerScript.enemyCounter--;
-                //Debug.Log($"Enemy TakeDamage Debug: {EnemySpawnerScript.enemyCounter}");
                 enemySpawnerScript.DecreaseEnemyCounter();
             }
             Destroy(gameObject);

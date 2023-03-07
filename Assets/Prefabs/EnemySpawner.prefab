@@ -44,7 +44,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyText: {fileID: 2837464778693944376, guid: 39bb3c7c7c00ab44fa59d42f8935830b, type: 3}
-  enemyCounter: 0
   enemyPrefabs:
   - {fileID: 7490306391043235940, guid: 947eabe1afa3d0b4fae4d3970e08538f, type: 3}
   - {fileID: 1043018589297127497, guid: 07fd6f80dfd088348af5e2594cc02ee0, type: 3}
+  obstaclePrefabs:
+  - {fileID: 5015450141800430157, guid: 80875a6cd8add924894a16e50fcff39f, type: 3}
+  - {fileID: 3010525385109058344, guid: e2fba38ccb410554cacc848354e732db, type: 3}

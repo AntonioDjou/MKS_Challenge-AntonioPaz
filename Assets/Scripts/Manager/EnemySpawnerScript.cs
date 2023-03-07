@@ -9,6 +9,7 @@ public class EnemySpawnerScript : MonoBehaviour
 
     [Space(10)]
     public GameObject[] enemyPrefabs;
+    public GameObject[] obstaclePrefabs;
     float enemyTimer = 3;
 
     void Start()
@@ -20,18 +21,12 @@ public class EnemySpawnerScript : MonoBehaviour
         //enemyText.text = $"Enemies: {EnemySpawnerScript.enemyCounter.ToString()}";
 
         StartCoroutine(SpawnEnemies());
+        SpawnObstacles();
     }
 
     public void DecreaseEnemyCounter()
     {
-        //Debug.Log("EnemyDecrease Script!");
-        //if(enemyCounter > 0) 
-        //{
-        Debug.Log($"Enemy counter before reducing: {EnemySpawnerScript.enemyCounter.ToString()}");
-        EnemySpawnerScript.enemyCounter--;
-        Debug.Log($"EnemyReduced to: {EnemySpawnerScript.enemyCounter.ToString()}");
-        //enemyText.text = EnemySpawnerScript.enemyCounter.ToString();
-        //}      
+        EnemySpawnerScript.enemyCounter--;   
     }
 
     void FixedUpdate()
@@ -51,5 +46,12 @@ public class EnemySpawnerScript : MonoBehaviour
         
         //enemyText.text = $"Enemies: {EnemySpawnerScript.enemyCounter.ToString()}";
         StartCoroutine(SpawnEnemies());
+    }
+
+    void SpawnObstacles()
+    {
+        int randomObstacle = Random.Range(0, obstaclePrefabs.Length);
+        Instantiate(obstaclePrefabs[randomObstacle], new Vector3(Random.Range(-15, 12), Random.Range(-12,14), 0), Quaternion.Euler(new Vector3(0, 0, Random.Range(0, 360))));
+        Instantiate(obstaclePrefabs[randomObstacle], new Vector3(Random.Range(-12, 15), Random.Range(-16,14), 0), Quaternion.Euler(new Vector3(0, 0, Random.Range(0, 360))));
     }
 }
